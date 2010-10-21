@@ -1,0 +1,161 @@
+$def with (cloudInfo)
+
+$ cluster_resources = cloudInfo[0].split('\n')
+$ highjobs = cloudInfo[1].split()
+$ newjobs = cloudInfo[2].split()
+$ schedjobs = cloudInfo[3].split()
+$ vmres = cloudInfo[4].split()
+
+
+<html>
+<head>
+<!--<meta http-equiv="refresh" content="20">-->
+<style type="text/css">
+body
+{
+	font-family: helvetica, arial;
+}
+
+tables
+{
+	width: 500px;
+}
+th,td
+{
+border:1px solid black;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Cluster Resources:</h2><br>
+$cluster_resources[0]<br>
+$cluster_resources[1]<br>
+$cluster_resources[2]<br>
+$cluster_resources[3]
+
+<br>
+<h2>Cluster VM Resources</h2>
+<br>
+
+$ vmresLen = len(vmres) - 4
+$ novms = vmresLen/5 - 1
+number of VMs: $novms<div style="text-align: center; width:476px;height:400px;overflow:auto;">
+<table>
+<tr>
+<th>$vmres[0]</th>
+<th>$vmres[1]</th>
+<th>$vmres[2]</th>
+<th>$vmres[3]</th>
+<th>$vmres[4]</th>
+$ i = 5
+$while i < vmresLen - 4:
+        <tr>
+        <td>$vmres[i]</td>
+        <td>$vmres[i+1]</td>
+        <td>$vmres[i+2]</td>
+        <td>$vmres[i+3]</td>
+        <td>$vmres[i+4]</td>
+        </tr>
+        $ i = i + 5
+
+</table>
+</div>
+
+
+
+
+<h2>Jobs in New Queue</h2><br>
+
+$ newjobsLen = len(newjobs) - 4
+$ noNewJobs = newjobsLen/5
+number of new jobs: $noNewJobs<div style="width:480px;height:400px;overflow:auto;">
+<table>
+<tr>
+<th>$newjobs[0] $newjobs[1] </th>
+<th>$newjobs[2]</th>
+<th>$newjobs[3] $newjobs[4]</th>
+<th>$newjobs[5] $newjobs[6]</th>
+<th>$newjobs[7]</th>
+$ i = 8
+$while i < newjobsLen:
+	<tr>
+	<td>$newjobs[i]</td>
+	<td>$newjobs[i+1]</td>
+	<td>$newjobs[i+2]</td>
+	<td>$newjobs[i+3]</td>
+	<td>$newjobs[i+4]</td>	
+	</tr>
+	$ i = i + 5
+
+</table>
+</div>
+<?php
+echo ('hello');
+?>
+<h2> Jobs in Scheduled Queue</h2><br>
+$ schedjobsLen = len(schedjobs) - 4
+$ noSchedJobs = schedjobsLen/5
+number of scheduled jobs: $noSchedJobs
+<div style="width:470px;height:400px;overflow:auto;">
+<table>
+<tr>
+<th>$schedjobs[0] $schedjobs[1] </th>
+<th>$schedjobs[2]</th>
+<th>$schedjobs[3] $schedjobs[4]</th>
+<th>$schedjobs[5] $schedjobs[6]</th>
+<th>$schedjobs[7]</th>
+$ i = 8
+$while i < schedjobsLen:
+        <tr>
+        <td>$schedjobs[i]</td>
+        <td>$schedjobs[i+1]</td>
+        <td>$schedjobs[i+2]</td>
+        <td>$schedjobs[i+3]</td>
+        <td>$schedjobs[i+4]</td>
+        </tr>
+        $ i = i + 5
+
+</table>
+</div>
+
+<h2>Jobs in High Priority Queue</h2><br>
+$ highjobsLen = len(highjobs) - 4
+$ nohighJobs = highjobsLen/5
+number of high jobs: $nohighJobs
+
+<div style="width:500px;height:400px;overflow:auto;">
+<table>
+<tr>
+<th>$highjobs[0] $highjobs[1] </th>
+<th>$highjobs[2]</th>
+<th>$highjobs[3] $highjobs[4]</th>
+<th>$highjobs[5] $highjobs[6]</th>
+<th>$highjobs[7]</th>
+$ i = 8
+$while i < highjobsLen:
+        <tr>
+        <td>$highjobs[i]</td>
+        <td>$highjobs[i+1]</td>
+        <td>$highjobs[i+2]</td>
+        <td>$highjobs[i+3]</td>
+        <td>$highjobs[i+4]</td>
+        </tr>
+        $ i = i + 5
+
+</table>
+</div>
+
+<!--
+<h1>New Jobs:</h1><br>
+<div style="width:600px;height:600px;overflow:auto;">
+$for x in newjobs
+	$x
+	<br>
+
+</div>
+-->
