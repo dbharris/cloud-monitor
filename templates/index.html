@@ -1,24 +1,26 @@
-$def with (cloudInfo)
-
-$ cluster_resources = cloudInfo[0].split('\n')
-$ highjobs = cloudInfo[1].split()
-$ newjobs = cloudInfo[2].split()
-$ schedjobs = cloudInfo[3].split()
-$ vmres = cloudInfo[4].split()
-
-
+$def with (json_resources, cluster_list)
+$ no_vms = len(json_resources['resources'][0]['vms'])
+$ cpu_archs = json_resources['resources'][0]['cpu_archs']
+$ cloud_type = json_resources['resources'][0]['cloud_type']
+$ name = json_resources['resources'][0]['name']
+$ network_pools = json_resources['resources'][0]['network_pools']
+$ cpu_cores = json_resources['resources'][0]['cpu_cores']
+$ memory = json_resources['resources'][0]['memory']
+$ storageGB = json_resources['resources'][0]['storageGB']
+$ vms = json_resources['resources'][0]['vms']
+$ vms_headings = vms[0].keys()
 <html>
 <head>
-<!--<meta http-equiv="refresh" content="20">-->
+<title>Cloud Monitor</title>
 <style type="text/css">
 body
 {
-	font-family: helvetica, arial;
+    font-family: helvetica, arial;
 }
 
 tables
 {
-	width: 500px;
+    width: 500px;
 }
 th,td
 {
@@ -27,135 +29,59 @@ border:1px solid black;
 }
 
 </style>
-
 </head>
-
 <body>
+$ cluster_list_len = len(cluster_list)
 
-<h2>Cluster Resources:</h2><br>
-$cluster_resources[0]<br>
-$cluster_resources[1]<br>
-$cluster_resources[2]<br>
-$cluster_resources[3]
+$cluster_list.remove(cluster_list[cluster_list_len - 1])
+$cluster_list.remove(cluster_list[cluster_list_len - 2])
 
-<br>
-<h2>Cluster VM Resources</h2>
-<br>
 
-$ vmresLen = len(vmres) - 4
-$ novms = vmresLen/5 - 1
-number of VMs: $novms<div style="text-align: center; width:476px;height:400px;overflow:auto;">
-<table>
-<tr>
-<th>$vmres[0]</th>
-<th>$vmres[1]</th>
-<th>$vmres[2]</th>
-<th>$vmres[3]</th>
-<th>$vmres[4]</th>
-$ i = 5
-$while i < vmresLen - 4:
+<table>    
+$for item in cluster_list:
+    $if item[0] == "Cluster:":
         <tr>
-        <td>$vmres[i]</td>
-        <td>$vmres[i+1]</td>
-        <td>$vmres[i+2]</td>
-        <td>$vmres[i+3]</td>
-        <td>$vmres[i+4]</td>
+        $for j in item
+            <td><b>$j</b></td>
         </tr>
-        $ i = i + 5
-
-</table>
-</div>
-
-
-
-
-<h2>Jobs in New Queue</h2><br>
-
-$ newjobsLen = len(newjobs) - 4
-$ noNewJobs = newjobsLen/5
-number of new jobs: $noNewJobs<div style="width:480px;height:400px;overflow:auto;">
-<table>
-<tr>
-<th>$newjobs[0] $newjobs[1] </th>
-<th>$newjobs[2]</th>
-<th>$newjobs[3] $newjobs[4]</th>
-<th>$newjobs[5] $newjobs[6]</th>
-<th>$newjobs[7]</th>
-$ i = 8
-$while i < newjobsLen:
-	<tr>
-	<td>$newjobs[i]</td>
-	<td>$newjobs[i+1]</td>
-	<td>$newjobs[i+2]</td>
-	<td>$newjobs[i+3]</td>
-	<td>$newjobs[i+4]</td>	
-	</tr>
-	$ i = i + 5
-
-</table>
-</div>
-<?php
-echo ('hello');
-?>
-<h2> Jobs in Scheduled Queue</h2><br>
-$ schedjobsLen = len(schedjobs) - 4
-$ noSchedJobs = schedjobsLen/5
-number of scheduled jobs: $noSchedJobs
-<div style="width:470px;height:400px;overflow:auto;">
-<table>
-<tr>
-<th>$schedjobs[0] $schedjobs[1] </th>
-<th>$schedjobs[2]</th>
-<th>$schedjobs[3] $schedjobs[4]</th>
-<th>$schedjobs[5] $schedjobs[6]</th>
-<th>$schedjobs[7]</th>
-$ i = 8
-$while i < schedjobsLen:
+    $elif item[0] == "ADDRESS":
         <tr>
-        <td>$schedjobs[i]</td>
-        <td>$schedjobs[i+1]</td>
-        <td>$schedjobs[i+2]</td>
-        <td>$schedjobs[i+3]</td>
-        <td>$schedjobs[i+4]</td>
+           
+        <td><b>$item[0]</td>
+        <td><b>$item[1] $item[2]</td>
+        <td><b>$item[3] $item[4]</td>
+        <td><b>$item[5]</b></td>
+        </b></tr>
+    $else:
+        <tr>
+        $for k in item:
+            <td>$k</td>
         </tr>
-        $ i = i + 5
-
 </table>
-</div>
-
-<h2>Jobs in High Priority Queue</h2><br>
-$ highjobsLen = len(highjobs) - 4
-$ nohighJobs = highjobsLen/5
-number of high jobs: $nohighJobs
-
-<div style="width:500px;height:400px;overflow:auto;">
+Number of VMs: $no_vms <br>
+$ id_list = []
+$for item in json_resources['resources'][0]['vms']
+    $id_list.append(item['id'])
+$id_list.sort()
 <table>
 <tr>
-<th>$highjobs[0] $highjobs[1] </th>
-<th>$highjobs[2]</th>
-<th>$highjobs[3] $highjobs[4]</th>
-<th>$highjobs[5] $highjobs[6]</th>
-<th>$highjobs[7]</th>
-$ i = 8
-$while i < highjobsLen:
-        <tr>
-        <td>$highjobs[i]</td>
-        <td>$highjobs[i+1]</td>
-        <td>$highjobs[i+2]</td>
-        <td>$highjobs[i+3]</td>
-        <td>$highjobs[i+4]</td>
-        </tr>
-        $ i = i + 5
-
+<td>id</td>
+$for item in json_resources['resources'][0]['vms'][0].keys():
+    $if item != "id":
+        <td>$item</td>
+    
+</tr>
+<tr>
+$for vm_id in id_list
+    $for index in json_resources['resources'][0]['vms']:
+        $if index['id'] == vm_id:
+            <td>$vm_id</td>
+            $for item in index.keys():
+                $if item != "id":
+                    <td>$index[item]</td>
+            </tr>
+        
+    
 </table>
-</div>
 
-<!--
-<h1>New Jobs:</h1><br>
-<div style="width:600px;height:600px;overflow:auto;">
-$for x in newjobs
-	$x
-	<br>
 
-</div>
--->
