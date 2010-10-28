@@ -12,19 +12,60 @@ $ vms_headings = vms[0].keys()
 <html>
 <head>
 <title>Cloud Monitor</title>
+<script src="static/jquery-1.4.3.js"></script>
+<script type="text/javascript">
+\$(document).ready(function(){
+
+
+\$('#vmlist').hide();
+\$('#clusterlist').hide();
+\$(".stripeMe tr").mouseover(function() {
+
+\$(this).addClass("over");
+
+});
+
+\$(".stripeMe tr").mouseout(function() {
+
+\$(this).removeClass("over");
+
+});
+
+
+\$(".stripeMe tr:even").addClass("alt");
+
+});
+
+</script>
+
+
 <style type="text/css">
 body
 {
     font-family: helvetica, arial;
 }
 
-tables
-{
-    width: 500px;
+td {
+        padding: 6px 11px;
+        border: 1 px solid black;
+        vertical-align: top;
 }
-th,td
-{
-border:1px solid black;
+
+td * {
+        padding: 6px 11px;
+}
+
+tr.alt td {
+        background: #ecf6fc;
+}
+
+tr.over td {
+        background: #bcd4ec;
+}
+
+th {
+        padding: 6px 11px;
+        border: 1px solid black;
 
 }
 
@@ -35,8 +76,8 @@ $ cluster_list_len = len(cluster_list)
 
 $cluster_list.remove(cluster_list[cluster_list_len - 1])
 $cluster_list.remove(cluster_list[cluster_list_len - 2])
-
-
+<a onclick="\$('#clusterlist').toggle()" href="#"/><h3>Show/Hide Cluster List</h3></a>
+<div id="clusterlist">
 <table>    
 $for item in cluster_list:
     $if item[0] == "Cluster:":
@@ -54,23 +95,39 @@ $for item in cluster_list:
         </b></tr>
     $else:
         <tr>
-        $for k in item:
-            <td>$k</td>
+        <td>$item[0]</td>
+        <td>$item[1]</td>
+        <td>$item[2]</td>
+        $ memory = item[3:]
+        $ sum = 0
+        $for i in xrange(len(memory))
+            $ memory[i] = memory[i].strip('[], ')
+            $ memory[i] = int(memory[i])
+            $ sum = sum + memory[i]
+        <td>$sum</td> 
+        
         </tr>
 </table>
+
+</div>
 Number of VMs: $no_vms <br>
 $ id_list = []
 $for item in json_resources['resources'][0]['vms']
     $id_list.append(item['id'])
 $id_list.sort()
-<table>
+
+
+<a onclick="\$('#vmlist').toggle()" href="#"/><h3>Show/Hide Running VMs</a></h3>
+<div id="vmlist">
+<table class="stripeMe">
 <tr>
-<td>id</td>
+<th>id</th>
 $for item in json_resources['resources'][0]['vms'][0].keys():
     $if item != "id":
-        <td>$item</td>
+        <th>$item</th>
     
 </tr>
+
 <tr>
 $for vm_id in id_list
     $for index in json_resources['resources'][0]['vms']:
@@ -81,7 +138,6 @@ $for vm_id in id_list
                     <td>$index[item]</td>
             </tr>
         
-    
 </table>
-
+</div>
 
