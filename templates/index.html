@@ -1,97 +1,57 @@
-$def with (json_resources, cluster_list)
-$ no_vms = len(json_resources['resources'][0]['vms'])
-$ cpu_archs = json_resources['resources'][0]['cpu_archs']
-$ cloud_type = json_resources['resources'][0]['cloud_type']
-$ name = json_resources['resources'][0]['name']
-$ network_pools = json_resources['resources'][0]['network_pools']
-$ cpu_cores = json_resources['resources'][0]['cpu_cores']
-$ memory = json_resources['resources'][0]['memory']
-$ storageGB = json_resources['resources'][0]['storageGB']
-$ vms = json_resources['resources'][0]['vms']
-$ vms_headings = vms[0].keys()
+$def with (resources, newjobs, schedjobs)
 <html>
 <head>
 <title>Cloud Monitor</title>
-<script src="static/jquery-1.4.3.js"></script>
+<link rel="stylesheet" type="text/css" href="static/themes/blue/style.css"/>
+<script src="static/jquery-latest.js"></script>
+<script src="static/jquery.tablesorter.js"></script>
 <script type="text/javascript">
-\$(document).ready(function(){
+\$(function(){
 
 
 \$('#vmlist').hide();
 \$('#clusterlist').hide();
-\$(".stripeMe tr").mouseover(function() {
 
-\$(this).addClass("over");
+\$("#myTable").tablesorter({sortList:[[0,0]], widgets: ['zebra']});
+\$("#options").tablesorter({sortList: [[0,0]], headers: { 3:{sorter: false}, 4:{sorter: false}}});
 
+\$('#showvms').click(function () {
+    \$('#vmlist').toggle();
 });
-
-\$(".stripeMe tr").mouseout(function() {
-
-\$(this).removeClass("over");
-
+\$('#showcluster').click(function () {
+    \$('#clusterlist').toggle();
+    });
 });
-
-
-\$(".stripeMe tr:even").addClass("alt");
-
-});
-
 </script>
-
-
 <style type="text/css">
 body
 {
     font-family: helvetica, arial;
 }
-
-td {
-        padding: 6px 11px;
-        border: 1 px solid black;
-        vertical-align: top;
+a:link {color: black; text-decoration: none; }
+a:active {color: black; text-decoration: none; }
+a:visited {color: black; text-decoration: none; }
+a:hover {color: gray; text-decoration: none; }
 }
-
-td * {
-        padding: 6px 11px;
-}
-
-tr.alt td {
-        background: #ecf6fc;
-}
-
-tr.over td {
-        background: #bcd4ec;
-}
-
-th {
-        padding: 6px 11px;
-        border: 1px solid black;
-
-}
-
 </style>
 </head>
 <body>
-$ cluster_list_len = len(cluster_list)
-
-$cluster_list.remove(cluster_list[cluster_list_len - 1])
-$cluster_list.remove(cluster_list[cluster_list_len - 2])
-<a onclick="\$('#clusterlist').toggle()" href="#"/><h3>Show/Hide Cluster List</h3></a>
+$ cluster_list_len = len(resources['cluster_list'])
+<div id="showcluster" style="width:240px;"><a href="#"/><h3>Show/Hide Cluster List</h3></a></div>
 <div id="clusterlist">
-<table>    
-$for item in cluster_list:
+<table class="tablesorter">    
+$for item in resources['cluster_list']:
     $if item[0] == "Cluster:":
         <tr>
         $for j in item
-            <td><b>$j</b></td>
+            <th><b>$j</b></th>
         </tr>
     $elif item[0] == "ADDRESS":
         <tr>
-           
-        <td><b>$item[0]</td>
-        <td><b>$item[1] $item[2]</td>
-        <td><b>$item[3] $item[4]</td>
-        <td><b>$item[5]</b></td>
+        <td>$item[0]
+        <td>$item[1] $item[2]</td>
+        <td>$item[3] $item[4]</td>
+        <td>$item[5]</td>
         </b></tr>
     $else:
         <tr>
@@ -105,39 +65,92 @@ $for item in cluster_list:
             $ memory[i] = int(memory[i])
             $ sum = sum + memory[i]
         <td>$sum</td> 
-        
         </tr>
 </table>
-
 </div>
-Number of VMs: $no_vms <br>
-$ id_list = []
-$for item in json_resources['resources'][0]['vms']
-    $id_list.append(item['id'])
-$id_list.sort()
-
-
-<a onclick="\$('#vmlist').toggle()" href="#"/><h3>Show/Hide Running VMs</a></h3>
+<a href="#"><div id="showvms" style="width:240px;"><h3>Show/Hide Running VMs</h3></a></div>
 <div id="vmlist">
-<table class="stripeMe">
+<table id="myTable" class="tablesorter">
+<thead>
 <tr>
 <th>id</th>
-$for item in json_resources['resources'][0]['vms'][0].keys():
+$for item in resources['headings']:
     $if item != "id":
         <th>$item</th>
-    
 </tr>
-
-<tr>
-$for vm_id in id_list
-    $for index in json_resources['resources'][0]['vms']:
+</thead>
+<tbody>
+$for vm_id in resources['id_list']:
+    $for index in resources['vm_data']:
         $if index['id'] == vm_id:
+            <tr>
             <td>$vm_id</td>
             $for item in index.keys():
                 $if item != "id":
                     <td>$index[item]</td>
             </tr>
-        
 </table>
 </div>
+<p>
+<h4>VM Statistics</h4><br>
+$for i in xrange(len(resources['status'])):
+    $resources['status'][i] : $resources['status_no'][i] <br>
+$for i in xrange(len(resources['vmtype'])):
+    $resources['vmtype'][i] : $resources['vmtype_no'][i] <br>
+$#for i in xrange(len(resources['image'])):
+    $#resources['image'][i] : $resources['image_no'][i] <br>
+<h4> New Job Statistics</h4>
+$for i in xrange(len(newjobs['status'])):
+    $newjobs['status'][i] : $newjobs['status_no'][i] <br>
+$for i in xrange(len(newjobs['user'])):
+    $newjobs['user'][i] : $newjobs['user_no'][i] <br>
+<p>
+<h4> Scheduled Job Statistics</h4>
+$for i in xrange(len(schedjobs['status'])):
+    $schedjobs['status'][i] : $schedjobs['status_no'][i] <br>
+$for i in xrange(len(schedjobs['user'])):
+    $schedjobs['user'][i] : $schedjobs['user_no'][i] <br>
+<p>
+
+
+<!--
+<a href="#"><div id="shownewjobs" style="width:240px;"><h3>Show/Hide New Jobs</h3></a></div>
+<div id="newjoblist">
+<table>
+<thead>
+<tr>
+$#$for item in newjobs['headings']:
+$#    <th>$item</th>
+</tr>
+</thead>
+$#<tbody>
+$#$for index in newjobs['newjobinfo']:
+$#    <tr>
+$#    $for item in index.keys():
+$#        <td>$index[item]</td>
+$#    </tr>
+$#</tbody>
+</table>
+</div>
+
+<a href="#"><div id="showschedjobs" style="width:280px;"><h3>Show/Hide Scheduled Jobs</h3></a></div>
+<div id="schedjoblist">
+<table>
+<thead>
+<tr>
+$#$for item in schedjobs['headings']:
+$#    <th>$item</th>
+</tr>
+</thead>
+$#<tbody>
+$#$for index in schedjobs['schedjobinfo']:
+$#    <tr>
+$#    $for item in index.keys():
+$#        <td>$index[item]</td>
+$#    </tr>
+$#
+$#</tbody>
+</table>
+</div>
+-->
 
