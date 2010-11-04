@@ -41,14 +41,6 @@ def parse_resources(json_resources, cluster_list):
         del item['mementry']
         del item['name']
         del item['cloudtype']
-    no_vms = len(json_resources['resources'][0]['vms'])
-    cpu_archs = json_resources['resources'][0]['cpu_archs']
-    cloud_type = json_resources['resources'][0]['cloud_type']
-    name = json_resources['resources'][0]['name']
-    network_pools = json_resources['resources'][0]['network_pools']
-    cpu_cores = json_resources['resources'][0]['cpu_cores']
-    memory = json_resources['resources'][0]['memory']
-    storageGB = json_resources['resources'][0]['storageGB']
     vms = json_resources['resources'][0]['vms']
     vms_headings = vms[0].keys()
     id_list = []
@@ -79,13 +71,10 @@ def parse_resources(json_resources, cluster_list):
             if item['image'] == image[i]:
                 image_no[i] += 1
     vm_data = json_resources['resources'][0]['vms']
-    #for item in vm_data:
-    #    id_list.append(item['id'])
-    #id_list.sort()
     cluster_list_len = len(cluster_list)
     cluster_list.remove(cluster_list[cluster_list_len - 1])
     cluster_list.remove(cluster_list[cluster_list_len - 2])
-    resources = {'cluster_list': cluster_list, 'no_vms': no_vms, 'cpu_archs': cpu_archs, 'cloud_type': cloud_type, 'name': name, 'network_pools': network_pools, 'cpu_cores': cpu_cores, 'memory': memory, 'storageGB': storageGB, 'vms': vms, 'vms_headings': vms_headings, 'id_list': id_list, 'vm_data': vm_data, 'status': status, 'status_no': status_no, 'vmtype': vmtype, 'vmtype_no': vmtype_no, 'image': image, 'image_no': image_no, 'headings': json_resources['resources'][0]['vms'][0].keys()}
+    resources = {'cluster_list': cluster_list, 'vms': vms, 'vms_headings': vms_headings, 'id_list': id_list, 'vm_data': vm_data, 'status': status, 'status_no': status_no, 'vmtype': vmtype, 'vmtype_no': vmtype_no, 'image': image, 'image_no': image_no, 'headings': json_resources['resources'][0]['vms'][0].keys()}
 
     return resources
 
